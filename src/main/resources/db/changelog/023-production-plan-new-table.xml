@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="023-production-plan-new-table" author="">
+        <createSequence sequenceName="production_plan_new_id_seq"/>
+        <createTable tableName="production_plan_new">
+            <column name="id" type="bigint" defaultValueSequenceNext="production_plan_new_id_seq">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="p1" type="integer" defaultValue="0"/>
+            <column name="p2" type="integer" defaultValue="0"/>
+            <column name="p3" type="integer" defaultValue="0"/>
+        </createTable>
+    </changeSet>
+
+<!--    <changeSet id="023-production-plan-new-table" author="">-->
+<!--        <insert tableName="production_plan_new">-->
+
+<!--            <column name="p1" value="0" />-->
+<!--            <column name="p2" value="0" />-->
+<!--            <column name="p3" value="0" />-->
+<!--        </insert>-->
+<!--    </changeSet>-->
+
+</databaseChangeLog>
