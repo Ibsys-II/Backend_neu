@@ -340,36 +340,68 @@ public class DispositionEigenfertigungService {
 
         var productionPlanNew = productionPlanServiceNew.findAll().get(0);
 
+        var mutableDataP1 = new MutableDataP1(0, 0, 0);
+        var mutableDataP2 = new MutableDataP2(0, 0, 0);
+        var mutableDataP3 = new MutableDataP3(0, 0, 0);
+
         log.info("productionPlanNew: {}", productionPlanNew);
 
         List<DispositionEigenfertigungArticleResultDTO> dispositionP1Articles = dispositionEigenfertigungResults.stream()
                 .filter(article -> article.getDispositinEigenfertigungResultId().getStuecklistenGruppe() == StuecklistenGruppe.GRUPPE_1)
                 .map(dispositionResultMapper::toDTO)
+                //.sorted(Comparator.comparingInt(a -> a.getArticleNumber()))
                 .map(a -> {
-                    a.setVertriebswunsch(productionPlanNew.getP1());
-
-                    a.setProduktionFuerKommendePeriode(
-                            a.getVertriebswunsch() +
-                                    a.getAuftraegeInWarteschlange() +
-                                    a.getAuftraegeInBearbeitung() +
-                                    a.getZusaetzlicheProduktionsauftraege() -
-                                    a.getWarteschlange() -
-                                    a.getGeplanterSicherheitsbestand() -
-                                    a.getLagerbestandEndeVorperiode()
-                    );
-
                     if (a.getArticleNumber() == 1) {
+                        a.setVertriebswunsch(productionPlanNew.getP1());
+
+                        a.setGeplanterSicherheitsbestand(
+                                productionPlanNew.getP1() +
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getVertriebswunsch()
+                        );
+                        a.setProduktionFuerKommendePeriode(productionPlanNew.getP1());
+                        mutableDataP1.warteschlageP1 = a.getWarteschlange();
+                        return a;
+                    }
+
+                    if (a.getArticleNumber() == 26) {
+                        a.setVertriebswunsch(productionPlanNew.getP1());
                         a.setProduktionFuerKommendePeriode(
-                                a.getVertriebswunsch() +
-                                        a.getAuftraegeInWarteschlange() +
-                                        a.getAuftraegeInBearbeitung() +
-                                        a.getZusaetzlicheProduktionsauftraege() -
-                                        a.getWarteschlange() -
+                                productionPlanNew.getP1() +
+                                        mutableDataP1.warteschlageP1 +
                                         a.getGeplanterSicherheitsbestand() -
-                                        a.getLagerbestandEndeVorperiode()
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getAuftraegeInWarteschlange() -
+                                        a.getAuftraegeInBearbeitung()
                         );
                         return a;
                     }
+
+                    if (a.getArticleNumber() == 51) {
+                        a.setVertriebswunsch(productionPlanNew.getP1());
+                        a.setProduktionFuerKommendePeriode(
+                                productionPlanNew.getP1() +
+                                        mutableDataP1.warteschlageP1 +
+                                        a.getGeplanterSicherheitsbestand() -
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getAuftraegeInWarteschlange() -
+                                        a.getAuftraegeInBearbeitung()
+                        );
+                        mutableDataP1.productionsMengeEFiftyOneP1 = a.getProduktionFuerKommendePeriode();
+                        mutableDataP1.wartesclageEFiftyOneP1 = a.getAuftraegeInWarteschlange();
+                        return a;
+                    }
+
+                    a.setVertriebswunsch(productionPlanNew.getP1());
+                    a.setProduktionFuerKommendePeriode(
+                            productionPlanNew.getP1() +
+                                    mutableDataP1.wartesclageEFiftyOneP1 +
+                                    a.getGeplanterSicherheitsbestand() -
+                                    a.getLagerbestandEndeVorperiode() -
+                                    a.getAuftraegeInWarteschlange() -
+                                    a.getAuftraegeInBearbeitung()
+                    );
+
                     return a;
                 })
                 .toList();
@@ -382,31 +414,59 @@ public class DispositionEigenfertigungService {
         List<DispositionEigenfertigungArticleResultDTO> dispositionP2Articles = dispositionEigenfertigungResults.stream()
                 .filter(article -> article.getDispositinEigenfertigungResultId().getStuecklistenGruppe() == StuecklistenGruppe.GRUPPE_2)
                 .map(dispositionResultMapper::toDTO)
+                //.sorted(Comparator.comparingInt(a -> a.getArticleNumber()).reversed())
                 .map(a -> {
-                    a.setVertriebswunsch(productionPlanNew.getP2());
-
-                    a.setProduktionFuerKommendePeriode(
-                            a.getVertriebswunsch() +
-                                    a.getAuftraegeInWarteschlange() +
-                                    a.getAuftraegeInBearbeitung() +
-                                    a.getZusaetzlicheProduktionsauftraege() -
-                                    a.getWarteschlange() -
-                                    a.getGeplanterSicherheitsbestand() -
-                                    a.getLagerbestandEndeVorperiode()
-                    );
-
                     if (a.getArticleNumber() == 2) {
+                        a.setVertriebswunsch(productionPlanNew.getP2());
+
+                        a.setGeplanterSicherheitsbestand(
+                                productionPlanNew.getP2() +
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getVertriebswunsch()
+                        );
+                        a.setProduktionFuerKommendePeriode(productionPlanNew.getP2());
+                        mutableDataP2.warteschlageP2 = a.getWarteschlange();
+                        return a;
+                    }
+
+                    if (a.getArticleNumber() == 26) {
+                        a.setVertriebswunsch(productionPlanNew.getP2());
                         a.setProduktionFuerKommendePeriode(
-                                a.getVertriebswunsch() +
-                                        a.getAuftraegeInWarteschlange() +
-                                        a.getAuftraegeInBearbeitung() +
-                                        a.getZusaetzlicheProduktionsauftraege() -
-                                        a.getWarteschlange() -
+                                productionPlanNew.getP2() +
+                                        mutableDataP2.warteschlageP2 +
                                         a.getGeplanterSicherheitsbestand() -
-                                        a.getLagerbestandEndeVorperiode()
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getAuftraegeInWarteschlange() -
+                                        a.getAuftraegeInBearbeitung()
                         );
                         return a;
                     }
+
+                    if (a.getArticleNumber() == 56) {
+                        a.setVertriebswunsch(productionPlanNew.getP2());
+                        a.setProduktionFuerKommendePeriode(
+                                productionPlanNew.getP2() +
+                                        mutableDataP2.warteschlageP2 +
+                                        a.getGeplanterSicherheitsbestand() -
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getAuftraegeInWarteschlange() -
+                                        a.getAuftraegeInBearbeitung()
+                        );
+                        mutableDataP2.productionsMengeEFiftySixP2 = a.getProduktionFuerKommendePeriode();
+                        mutableDataP2.wartesclageEFiftySixP2 = a.getAuftraegeInWarteschlange();
+                        return a;
+                    }
+
+                    a.setVertriebswunsch(productionPlanNew.getP2());
+                    a.setProduktionFuerKommendePeriode(
+                            productionPlanNew.getP2()  +
+                                    mutableDataP2.wartesclageEFiftySixP2 +
+                                    a.getGeplanterSicherheitsbestand() -
+                                    a.getLagerbestandEndeVorperiode() -
+                                    a.getAuftraegeInWarteschlange() -
+                                    a.getAuftraegeInBearbeitung()
+                    );
+
                     return a;
                 })
                 .toList();
@@ -419,31 +479,59 @@ public class DispositionEigenfertigungService {
         List<DispositionEigenfertigungArticleResultDTO> dispositionP3Articles = dispositionEigenfertigungResults.stream()
                 .filter(article -> article.getDispositinEigenfertigungResultId().getStuecklistenGruppe() == StuecklistenGruppe.GRUPPE_3)
                 .map(dispositionResultMapper::toDTO)
+                //.sorted(Comparator.comparingInt(a -> a.getArticleNumber()).reversed())
                 .map(a -> {
-                    a.setVertriebswunsch(productionPlanNew.getP3());
-
-                    a.setProduktionFuerKommendePeriode(
-                            a.getVertriebswunsch() +
-                                    a.getAuftraegeInWarteschlange() +
-                                    a.getAuftraegeInBearbeitung() +
-                                    a.getZusaetzlicheProduktionsauftraege() -
-                                    a.getWarteschlange() -
-                                    a.getGeplanterSicherheitsbestand() -
-                                    a.getLagerbestandEndeVorperiode()
-                    );
-
                     if (a.getArticleNumber() == 3) {
+                        a.setVertriebswunsch(productionPlanNew.getP3());
+
+                        a.setGeplanterSicherheitsbestand(
+                                productionPlanNew.getP3() +
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getVertriebswunsch()
+                        );
+                        a.setProduktionFuerKommendePeriode(productionPlanNew.getP3());
+                        mutableDataP3.warteschlageP3 = a.getWarteschlange();
+                        return a;
+                    }
+
+                    if (a.getArticleNumber() == 26) {
+                        a.setVertriebswunsch(productionPlanNew.getP3());
                         a.setProduktionFuerKommendePeriode(
-                                a.getVertriebswunsch() +
-                                        a.getAuftraegeInWarteschlange() +
-                                        a.getAuftraegeInBearbeitung() +
-                                        a.getZusaetzlicheProduktionsauftraege() -
-                                        a.getWarteschlange() -
+                                productionPlanNew.getP3() +
+                                        mutableDataP3.warteschlageP3 +
                                         a.getGeplanterSicherheitsbestand() -
-                                        a.getLagerbestandEndeVorperiode()
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getAuftraegeInWarteschlange() -
+                                        a.getAuftraegeInBearbeitung()
                         );
                         return a;
                     }
+
+                    if (a.getArticleNumber() == 31) {
+                        a.setVertriebswunsch(productionPlanNew.getP3());
+                        a.setProduktionFuerKommendePeriode(
+                                productionPlanNew.getP3() +
+                                        mutableDataP3.warteschlageP3 +
+                                        a.getGeplanterSicherheitsbestand() -
+                                        a.getLagerbestandEndeVorperiode() -
+                                        a.getAuftraegeInWarteschlange() -
+                                        a.getAuftraegeInBearbeitung()
+                        );
+                        mutableDataP3.productionsMengeEThirtyOneP3 = a.getProduktionFuerKommendePeriode();
+                        mutableDataP3.wartesclageEThirtyOneP3 = a.getAuftraegeInWarteschlange();
+                        return a;
+                    }
+
+                    a.setVertriebswunsch(productionPlanNew.getP3());
+                    a.setProduktionFuerKommendePeriode(
+                            productionPlanNew.getP3()  +
+                                    mutableDataP3.wartesclageEThirtyOneP3 +
+                                    a.getGeplanterSicherheitsbestand() -
+                                    a.getLagerbestandEndeVorperiode() -
+                                    a.getAuftraegeInWarteschlange() -
+                                    a.getAuftraegeInBearbeitung()
+                    );
+
                     return a;
                 })
                 .toList();
@@ -490,4 +578,40 @@ public class DispositionEigenfertigungService {
                 .values());
     }
 
+}
+
+class MutableDataP1 {
+    public Integer warteschlageP1;
+    public Integer wartesclageEFiftyOneP1;
+    public Integer productionsMengeEFiftyOneP1;
+
+    MutableDataP1(int warteschlageP1, int wartesclageEFiftyOneP1, int productionsMengeEFiftyOneP1) {
+        this.warteschlageP1 = warteschlageP1;
+        this.wartesclageEFiftyOneP1 = wartesclageEFiftyOneP1;
+        this.productionsMengeEFiftyOneP1 = productionsMengeEFiftyOneP1;
+    }
+}
+
+class MutableDataP2 {
+    public Integer warteschlageP2;
+    public Integer wartesclageEFiftySixP2;
+    public Integer productionsMengeEFiftySixP2;
+
+    MutableDataP2(int warteschlageP2, int wartesclageEFiftySixP2, int productionsMengeEFiftySixP2) {
+        this.warteschlageP2 = warteschlageP2;
+        this.wartesclageEFiftySixP2 = wartesclageEFiftySixP2;
+        this.productionsMengeEFiftySixP2 = productionsMengeEFiftySixP2;
+    }
+}
+
+class MutableDataP3 {
+    public Integer warteschlageP3;
+    public Integer wartesclageEThirtyOneP3;
+    public Integer productionsMengeEThirtyOneP3;
+
+    MutableDataP3(int warteschlageP3, int wartesclageEThirtyOneP3, int productionsMengeEThirtyOneP3) {
+        this.warteschlageP3 = warteschlageP3;
+        this.wartesclageEThirtyOneP3 = wartesclageEThirtyOneP3;
+        this.productionsMengeEThirtyOneP3 = productionsMengeEThirtyOneP3;
+    }
 }

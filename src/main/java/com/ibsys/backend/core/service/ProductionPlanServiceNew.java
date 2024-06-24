@@ -14,10 +14,10 @@ public class ProductionPlanServiceNew {
 
     private final ProductionPlanRepositoryNew productionPlanRepositoryNew;
 
+    public List<Integer> productionsMengeEFiftyOneP1 = List.of(0);
     public List<ProductionPlanNew> findAll() {
         return productionPlanRepositoryNew.findAll();
     }
-
     public void create(final ProductionPlanDtoNew productionPlanDtoNew) {
         productionPlanRepositoryNew.deleteAll();
         productionPlanRepositoryNew.save(productionPlanDtoNew.toProductionPlanNew());
